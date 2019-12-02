@@ -44,7 +44,9 @@ namespace ConsumeService
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.Secret))
                     };
                 });
-            services.AddControllers();
+            services.AddControllers(options => {
+                options.Filters.Add<AuthFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

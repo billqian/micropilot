@@ -15,6 +15,7 @@ namespace ConsumeService.Controllers
     {
         // GET: api/<controller>
         [Authorize]
+        [AuthFilter("Permission")]
         [HttpGet]
         public string Get()
         {
