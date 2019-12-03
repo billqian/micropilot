@@ -13,8 +13,8 @@ namespace ClientTest
     {
         static string _token = "";
 
-        static string _authUrl = "http://localhost:50000";
-        static string _consUrl = "http://localhost:50001";
+        //static string _authUrl = "http://localhost:50000";
+        //static string _consUrl = "http://localhost:50001";
 
         static string _baseUrl = "http://localhost:5000";
 
@@ -45,17 +45,14 @@ namespace ClientTest
                 Console.WriteLine($"状态码：{(int)response.StatusCode} 状态信息：{response.StatusCode}  返回结果：{content}");
 
 
-                //-------------------------------------------------
-                //var channel = CreateAuthenticatedChannel(_grpcUrl);//GrpcChannel.ForAddress(url);
+                //-----------------下面是GRPC调用--------------------------------
                 var channel = GrpcChannel.ForAddress(_grpcUrl);
-                //var invoker = channel.Intercept(new ClientLoggerInterceptor());
 
-                //var gclient = new Greeter.GreeterClient(invoker);//var client = new Greeter.GreeterClient(channel);
                 var gclient =  new Greeter.GreeterClient(channel);
                 var hiRequest = new HelloRequest { Name = "GreeterClient" };
 
                 var headers = new Metadata();
-                headers.Add("Authorization", $"Bearer {_token}");
+                headers.Add("Authorization", $"Bearer {_token}");//token加在header里面
                 var reply = gclient.SayHelloAsync(hiRequest, headers).GetAwaiter().GetResult();
                 Console.WriteLine("调用Greeter服务 : " + reply.Message);
             }
