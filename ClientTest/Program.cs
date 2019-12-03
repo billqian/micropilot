@@ -23,6 +23,16 @@ namespace ClientTest
 
         static void Main(string[] args)
         {
+            RefitClient.Test();
+            //Test();
+
+            Console.WriteLine(Environment.NewLine + "Press enter to exit.");
+            Console.ReadLine();
+        }
+
+
+        static void Test()
+        {
             if (!_grpcUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
                 AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
@@ -31,7 +41,7 @@ namespace ClientTest
 
             //1. login as bill
             var ret = Login("bill", "bill");
-            
+
             if (ret) {
                 //var client = new RestClient(_consUrl);
                 var client = new RestClient(_baseUrl);
@@ -39,7 +49,7 @@ namespace ClientTest
                 string tk = "Bearer " + _token;
                 client.AddDefaultHeader("Authorization", tk);
                 var request = new RestRequest("/test/values", Method.GET);
-                
+
                 IRestResponse response = client.Execute(request);
                 var content = response.Content;
                 Console.WriteLine($"状态码：{(int)response.StatusCode} 状态信息：{response.StatusCode}  返回结果：{content}");
@@ -48,7 +58,7 @@ namespace ClientTest
                 //-----------------下面是GRPC调用--------------------------------
                 var channel = GrpcChannel.ForAddress(_grpcUrl);
 
-                var gclient =  new Greeter.GreeterClient(channel);
+                var gclient = new Greeter.GreeterClient(channel);
                 var hiRequest = new HelloRequest { Name = "GreeterClient" };
 
                 var headers = new Metadata();
@@ -57,8 +67,7 @@ namespace ClientTest
                 Console.WriteLine("调用Greeter服务 : " + reply.Message);
             }
 
-            Console.WriteLine(Environment.NewLine + "Press enter to exit.");
-            Console.ReadLine();
+            
         }
         
 

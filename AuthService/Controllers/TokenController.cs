@@ -15,6 +15,14 @@ using RiiZoo.Web;
 
 namespace AuthService.Controllers
 {
+    public class TokenResult
+    {
+        public bool Status { get; set; } = false;
+        public string Role { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Token { get; set; } = "";
+    }
+
     [Route("[controller]")]
     [AllowAnonymous]
     public class TokenController : Controller
@@ -32,9 +40,8 @@ namespace AuthService.Controllers
             var isValidated = (username == "bill" || username == "qian");
             var role = username == "bill" ? "admin" : "system";
             if (!isValidated) {
-                return new JsonResult(new {
-                    Status = false,
-                    Message = "Auth Failed"
+                return new JsonResult(new TokenResult() {
+                    Status = false
                 });
             } else {
                 var dict = new List<Claim>() { 
@@ -42,11 +49,11 @@ namespace AuthService.Controllers
                     new Claim(ClaimTypes.Name, username)
                 };
                 var token = WriteToken(_audienceInfoLoader.LoadAudienceInfo(), dict, DateTime.Now.AddSeconds(3));
-                return new JsonResult(new {
-                    token = token,
-                    name = username,
-                    role = role,
-                    status = true
+                return new JsonResult(new TokenResult() {
+                    Token = token,
+                    Name = username,
+                    Role = role,
+                    Status = true
                 });
             }
         }
