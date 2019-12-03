@@ -1,7 +1,11 @@
-﻿using RestSharp;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
+using InternalGRPCService;
+using RestSharp;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ClientTest
 {
@@ -14,8 +18,17 @@ namespace ClientTest
 
         static string _baseUrl = "http://localhost:5000";
 
+        static string _grpcUrl = "https://localhost:5050";
+
+
         static void Main(string[] args)
         {
+            if (!_grpcUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                AppContext.SetSwitch(
+                    "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
+                    true);
+            }
+
             //1. login as bill
             var ret = Login("bill", "bill");
             
@@ -30,11 +43,27 @@ namespace ClientTest
                 IRestResponse response = client.Execute(request);
                 var content = response.Content;
                 Console.WriteLine($"状态码：{(int)response.StatusCode} 状态信息：{response.StatusCode}  返回结果：{content}");
+
+
+                //-------------------------------------------------
+                //var channel = CreateAuthenticatedChannel(_grpcUrl);//GrpcChannel.ForAddress(url);
+                var channel = GrpcChannel.ForAddress(_grpcUrl);
+                //var invoker = channel.Intercept(new ClientLoggerInterceptor());
+
+                //var gclient = new Greeter.GreeterClient(invoker);//var client = new Greeter.GreeterClient(channel);
+                var gclient =  new Greeter.GreeterClient(channel);
+                var hiRequest = new HelloRequest { Name = "GreeterClient" };
+
+                var headers = new Metadata();
+                headers.Add("Authorization", $"Bearer {_token}");
+                var reply = gclient.SayHelloAsync(hiRequest, headers).GetAwaiter().GetResult();
+                Console.WriteLine("调用Greeter服务 : " + reply.Message);
             }
 
             Console.WriteLine(Environment.NewLine + "Press enter to exit.");
             Console.ReadLine();
         }
+        
 
         static bool Login(string userName, string password)
         {
