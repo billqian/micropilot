@@ -14,17 +14,15 @@ namespace ClientTest
         public string Token { get; set; } = "";
     }
 
-    public interface IToken
+    public interface IRefitTest
     {
         [Post("/auth/token")]
         Task<TokenResult> Login(string username, string password);
-    }
 
-    public interface IConsumer
-    {
         [Get("/test/values")]
         Task<string> GetValue([Header("Authorization")] string authorization);
     }
+
 
     class RefitClient
     {
@@ -35,13 +33,11 @@ namespace ClientTest
         /// </summary>
         public static async void Test()
         {
-            var tokenApi = RestService.For<IToken>(_baseUrl);
-            var conApi = RestService.For<IConsumer>(_baseUrl);
-
-            var loginResult = await tokenApi.Login("bill", "bill");
+            var api = RestService.For<IRefitTest>(_baseUrl);
+            var loginResult = await api.Login("bill", "bill");
             if (loginResult.Status) {
                 string tk = "Bearer " + loginResult.Token;
-                var ret = conApi.GetValue(tk).Result;
+                var ret = api.GetValue(tk).Result;
                 Console.WriteLine("Consumer Service return value: " + ret);
             }
         }
