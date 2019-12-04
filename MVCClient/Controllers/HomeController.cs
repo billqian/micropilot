@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MVCClient.Models;
@@ -28,8 +29,13 @@ namespace MVCClient.Controllers
         public IActionResult Index()
         {
             try {
-                var token = HttpContext.User?.Claims.FirstOrDefault(s => s.Type == ClaimTypes.Sid).Value;
-                ViewBag.msg = _api.GetValue("Bearer " + token).Result;
+                var token = HttpContext.Session?.GetString("token");
+                if (string.IsNullOrEmpty(token)) {
+                    return RedirectToAction("Login");
+                } else {
+                    //var token = HttpContext.User?.Claims.FirstOrDefault(s => s.Type == ClaimTypes.Sid).Value;
+                    ViewBag.msg = _api.GetValue("Bearer " + token).Result;
+                }
             } catch (Exception ex) {
                 ViewBag.msg = ex.Message + ex.StackTrace;
             }
@@ -66,7 +72,7 @@ namespace MVCClient.Controllers
                 var claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Sid, token));
                 claims.Add(new Claim(ClaimTypes.Name, ret.Name));
-                
+                HttpContext.Session.SetString("token", token);
                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
                     new ClaimsPrincipal(new ClaimsIdentity(claims, "form")));
                 
