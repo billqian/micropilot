@@ -23,8 +23,16 @@ namespace ClientTest
 
         static void Main(string[] args)
         {
-            RefitClient.Test();
-            //Test();
+            Test();
+            while (true) {
+                var a = Console.ReadLine();
+                if (a == "a") {
+                    break;
+                } else {
+                    RefitClient.Test();
+                }
+            }
+            
 
             Console.WriteLine(Environment.NewLine + "Press enter to exit.");
             Console.ReadLine();

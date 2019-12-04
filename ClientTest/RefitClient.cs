@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Refit;
 
@@ -36,9 +37,12 @@ namespace ClientTest
             var api = RestService.For<IRefitTest>(_baseUrl);
             var loginResult = await api.Login("bill", "bill");
             if (loginResult.Status) {
-                string tk = "Bearer " + loginResult.Token;
-                var ret = api.GetValue(tk).Result;
-                Console.WriteLine("Consumer Service return value: " + ret);
+                for (var i = 0;i < 3; i++) {
+                    string tk = "Bearer " + loginResult.Token;
+                    var ret = api.GetValue(tk).Result;
+                    Console.WriteLine("Consumer Service return value: " + ret);
+                    Thread.SpinWait(10);
+                }
             }
         }
     }

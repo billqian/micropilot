@@ -13,20 +13,13 @@
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
 
       "ReRouteIsCaseSensitive": false,
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 10,
-        "TimeoutValue": 5000
-      },
+      
       "HttpHandlerOptions": {
         "AllowAutoRedirect": false,
         "UseCookieContainer": false,
         "UseTracing": false
-      },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "",
-        "AllowedScopes": []
       }
+      
     },
     {
       "DownstreamPathTemplate": "/{url}",
@@ -40,27 +33,17 @@
       "UpstreamPathTemplate": "/test/{url}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
       "ReRouteIsCaseSensitive": false,
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 10,
-        "TimeoutValue": 5000
-      },
+      
       "HttpHandlerOptions": {
         "AllowAutoRedirect": false,
         "UseCookieContainer": false,
         "UseTracing": false
-      },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "",
-        "AllowedScopes": []
       }
+      
     }
 
   ],
   "GlobalConfiguration": {
-    "ServiceDiscoveryProvider": {
-      "Host": "localhost",
-      "Port": 8500
-    }
+    
   }
 }

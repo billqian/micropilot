@@ -48,7 +48,10 @@ namespace AuthService.Controllers
                     new Claim(ClaimTypes.Role, role),
                     new Claim(ClaimTypes.Name, username)
                 };
-                var token = WriteToken(_audienceInfoLoader.LoadAudienceInfo(), dict, DateTime.Now.AddSeconds(3));
+                dict.Add(new Claim(ClaimTypes.Role, "User"));
+                dict.Add(new Claim("wx_openid", "12345"));
+                dict.Add(new Claim("session_id", Guid.NewGuid().ToString()));
+                var token = WriteToken(_audienceInfoLoader.LoadAudienceInfo(), dict, DateTime.Now.AddMinutes(30));
                 return new JsonResult(new TokenResult() {
                     Token = token,
                     Name = username,
@@ -62,7 +65,7 @@ namespace AuthService.Controllers
         {
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtInfo.Secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
                 issuer: jwtInfo.Issuer,

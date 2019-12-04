@@ -11,6 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
+using RiiZoo.Web;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Builder;
 
 namespace PortalGateway
 {
@@ -31,6 +36,21 @@ namespace PortalGateway
                        .AddEnvironmentVariables();
                })
                .ConfigureServices(s => {
+                   var loader = new BlankAudienceInfoLoader();
+                   var jwtSection = loader.LoadAudienceInfo();
+                   s.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                       .AddJwtBearer(options => {
+                           options.TokenValidationParameters = new TokenValidationParameters {
+                               ValidateIssuer = true,
+                               ValidateAudience = true,
+                               ValidateLifetime = true,
+                               ClockSkew = TimeSpan.FromSeconds(3), //注意这是缓冲过期时间，总的有效时间等于这个时间加上jwt的过期时间，如果不配置，默认是5分钟
+                        ValidateIssuerSigningKey = true,
+                               ValidAudience = jwtSection.Audience,
+                               ValidIssuer = jwtSection.Issuer,
+                               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.Secret))
+                           };
+                       });
                    s.AddOcelot().AddPolly();
                })
                .ConfigureLogging((hostingContext, logging) => {
@@ -38,23 +58,15 @@ namespace PortalGateway
                })
                .UseIISIntegration()
                .Configure(app => {
+                   app.UseAuthentication();
                    app.UseOcelot().Wait();
                })
                .Build()
                .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => {
-                    webBuilder
-                    .ConfigureAppConfiguration(conbuilder => {
-                        conbuilder.AddJsonFile("ocelot.json");
-                    })
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>().UseUrls("http://*:5000");
-                });
 
-        
+
+
     }
 }
