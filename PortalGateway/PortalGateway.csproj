@@ -13,8 +13,4 @@
     <PackageReference Include="Ocelot.Provider.Polly" Version="13.8.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\src\RiiZoo.Web.Base\RiiZoo.Web.Base.csproj" />
-  </ItemGroup>
-
 </Project>
