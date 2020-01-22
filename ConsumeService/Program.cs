@@ -19,7 +19,7 @@ namespace ConsumeService
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => {
-                    webBuilder.UseStartup<Startup>().UseUrls("http://*:50001");
+                    webBuilder.UseStartup<Startup>().UseUrls("http://*:5011");
                 });
     }
 }

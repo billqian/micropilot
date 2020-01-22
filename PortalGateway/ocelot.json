@@ -27,7 +27,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 50001
+          "Port": 5011
         }
       ],
       "UpstreamPathTemplate": "/test/{url}",

@@ -23,7 +23,7 @@ namespace ClientTest
 
         static void Main(string[] args)
         {
-            Test();
+            //Test();
             while (true) {
                 var a = Console.ReadLine();
                 if (a == "a") {
